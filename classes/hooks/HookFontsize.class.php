@@ -10,13 +10,25 @@
 
 class PluginFontsize_HookFontsize extends Hook
 {
+    const ConfigKey = 'fontsize';
+    const HooksArray = [
+        'engine_init_complete'          =>  'EngineInitComplete',
+        'template_topic_content_begin'  =>  'TopicContent',
+        'template_topic_content_end'    =>  'TopicContent',
+        'template_footer_end'           =>  'FooterEnd',
+    ];
 
     public function RegisterHook()
     {
-        $this->AddHook('engine_init_complete', 'EngineInitComplete');
-        $this->AddHook('template_topic_content_begin', 'TopicContent');
-        $this->AddHook('template_topic_content_end', 'TopicContent');
-        $this->AddHook('template_footer_end', 'FooterEnd');
+        $plugin_config_key = $this::ConfigKey;
+        foreach ($this::HooksArray as $hook => $callback) {
+            $this->AddHook(
+                $hook,
+                $callback,
+                __CLASS__,
+                Config::Get("plugin.{$plugin_config_key}.hook_priority.{$hook}") ?? 1
+            );
+        }
     }
 
     // ---
